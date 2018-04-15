@@ -3,7 +3,7 @@ import json
 
 def main():
     f = open("MeTooTweets.txt", "r")
-    violenceTerms = ["sexual assault", "sexual abuse", "sexual harassment"]
+    violenceTerms = ["sexual assault", "rape", "sexual harassment"]
     vicVsSurv = ["victim", "survivor"]
 
     line = ""
@@ -32,29 +32,29 @@ def main():
             else:
                 used = -9
             
-            if used != -9:    
+            if used != -9 :
                 name = fileLines[i].split()
                 r = requests.get("https://api.genderize.io/?name="+name[0]+"&country_id=us", verify = False)
                 results = r.json()
                 outTerm.write(violenceTerms[used]+" ")
+                if ('gender' in results):    
+                    if results['gender'] == None:
+                        outTerm.write(str(results['gender']) + " " )
+                        outTerm.write(str(results) + " ")
+                        outTerm.write(str(name))
+                        outTerm.write(" CHECK NEEDED**")                    
 
-                if results['gender'] == None:
-                    outTerm.write(str(results['gender']) + " " )
-                    outTerm.write(str(results) + " ")
-                    outTerm.write(str(name))
-                    outTerm.write(" CHECK NEEDED**")                    
+                    elif results['probability'] > 0.5 and results['gender'] != None:
+                        outTerm.write(results['gender'])
 
-                elif results['probability'] > 0.5 and results['gender'] != None:
-                    outTerm.write(results['gender'])
+                    else:    
+                        outTerm.write(str(results['gender']) + " " + str(results['probability']))
+                        outTerm.write(" " + str(results) + " ")
+                        outTerm.write(str(name))
+                        outTerm.write(" CHECK NEEDED**")                    
+                    
 
-                else:    
-                    outTerm.write(str(results['gender']) + " " + str(results['probability']))
-                    outTerm.write(" " + str(results) + " ")
-                    outTerm.write(str(name))
-                    outTerm.write(" CHECK NEEDED**")                    
-                
-
-                outTerm.write("\n")
+                    outTerm.write("\n")
           
     outTerm.close()
 
@@ -73,24 +73,25 @@ def main():
                 r = requests.get("https://api.genderize.io/?name="+name[0]+"&country_id=us", verify = False)
                 results = r.json()
                 outVicSurv.write(vicVsSurv[used]+" ")
-
-                if results['gender'] == None:
-                    outVicSurv.write(str(results['gender']) + " " )
-                    outVicSurv.write(str(results) + " ")
-                    outVicSurv.write(str(name))
-                    outVicSurv.write(" CHECK NEEDED**")                    
-
-                elif results['probability'] > 0.5 and results['gender'] != None:
-                    outVicSurv.write(results['gender'])
-
-                else:    
-                    outVicSurv.write(str(results['gender']) + " " + str(results['probability']))
-                    outVicSurv.write(" " + str(results) + " ")
-                    outVicSurv.write(str(name))
-                    outVicSurv.write(" CHECK NEEDED**")                    
-                
-                outVicSurv.write("\n")
-
+    
+                if ('gender' in results): 
+                    if results['gender'] == None:
+                        outVicSurv.write(str(results['gender']) + " " )
+                        outVicSurv.write(str(results) + " ")
+                        outVicSurv.write(str(name))
+                        outVicSurv.write(" CHECK NEEDED**")                    
+    
+                    elif results['probability'] > 0.5 and results['gender'] != None:
+                        outVicSurv.write(results['gender'])
+    
+                    else:    
+                        outVicSurv.write(str(results['gender']) + " " + str(results['probability']))
+                        outVicSurv.write(" " + str(results) + " ")
+                        outVicSurv.write(str(name))
+                        outVicSurv.write(" CHECK NEEDED**")                    
+                    
+                    outVicSurv.write("\n")
+    
     outVicSurv.close()
 
     f.close()
