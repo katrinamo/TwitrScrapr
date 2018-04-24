@@ -1,27 +1,39 @@
 import requests
 import json
-import time
+import sys
 
 def main():
-    term = raw_input("Which file would you like to use? ")
+    #grab the filename from the command line argument
+    filename = sys.argv[-1]
     
-    f = open(term + " MeTooTweets.txt", "r")
+    #check to make sure there is a file given before opening
+    if (sys.argv[0] != filename):
+        f = open(filename, "r")
+    else:
+        print "ERROR: Requires filename."
+        print "USAGE: python gender.py <FILENAME>"
+        return 1
 
+    #remove the file extension
+    parts = filename.split(".")
+    
+    #use only the first part to open out file
+    outTerm = open(parts[0]+"GenderBreakdown.txt", "w")
+
+    #intialize all the variables needed later
+    #not strictly needed but C habits die hard
     line = ""
     name = []
     prevLine =""
     fileLines = []  
   
-    outTerm = open(term+"GenderBreakdown.txt", "w")
+    
 
     for line in f:
         fileLines.append(line)
 
-    #determines which term was used by a tweeter
-    used = -9
-
-   #Now we see which sexual violence descriptor is used
-    for i in range (8957, len(fileLines)):
+    #Now we see which sexual violence descriptor is used
+    for i in range (2, len(fileLines)):
         if fileLines[i-2]  == "\n" and fileLines[i-1] == "\n":
             print i
             name = fileLines[i].split()
